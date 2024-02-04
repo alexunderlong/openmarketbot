@@ -1,5 +1,6 @@
+from utils.getAddrByDns import getaddrbydns
+from TonTools.Contracts.Wallet import Wallet
 from TonTools.Providers.TonCenterClient import TonCenterClient
-
 from bot import config
 
 client = TonCenterClient(config.TONCENTER_API_KEY)
