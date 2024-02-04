@@ -1,0 +1,8 @@
+aiogram
+pytoniq-core
+pytonconnect
+python-dotenv
+pytonapi
+TonTools
+pydantic
+nest_asyncio
