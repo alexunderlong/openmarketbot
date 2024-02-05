@@ -70,16 +70,17 @@ async def chooseAmount(message: Message, state: FSMContext):
                 if data.get('deal_type') == 'sell' and float(buyamount) > float(udb.get_balance(uid)[0]):
                         await message.answer("❌Недостаточно средств")
                 else:
-                    await message.answer("⛔На момент сделки мы заблокировали OPEN на кошельке"
-                                         "🕓Ожидаем ответа продавца")
-                    udb.lock_balance(uid, buyamount)
+
                     dealsdb.set_takerid_by_id(id, uid)
                     dealsdb.set_deal_hide(id)
                     dealsdb.set_takeramount_by_id(id, buyamount)
 
                     if data.get('deal_type') == 'sell':
+                        await message.answer("⛔На момент сделки мы залокировали OPEN на кошелеке\n🕓Ожидаем ответа продавца")
+                        udb.lock_balance(uid, buyamount)
                         await bot.send_message(makerid, f"🚀Пользователь начал с вами сделку на продажу {buyamount} OPEN по курсу {deal[7]} RUB/OPEN", reply_markup=skb.get_acceptMK_kb(id))
                     else:
+                        await message.answer("🕓Ожидаем ответа продавца")
                         await bot.send_message(makerid, f"🚀Пользователь начал с вами сделку на покупку {buyamount} OPEN по курсу {deal[7]} RUB/OPEN", reply_markup=skb.get_acceptMK_kb(id))
             else:
                 w = await message.answer("❌Вы не можете начать сделку с самим собой.", reply_markup=skb.get_backmrktbtn_kb())
@@ -241,4 +242,3 @@ async def market_postdeal(message: Message, state: FSMContext):
         w = await message.answer("❌Некорректная сумма\n"
                              "➡️Введите сумму:")
         await state.update_data(ermsg=w)
-
