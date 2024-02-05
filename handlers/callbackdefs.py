@@ -140,7 +140,7 @@ async def withdraw(uid: int, message: Message, state: FSMContext):
         await message.edit_text(f"💎Ваш баланс {balance} OPEN\n"
                                 "⚡Максимум: 0 OPEN\n"
                                 f"🆙Минимальный вывод: {config.MIN_WITHDRAW} OPEN\n"
-                                f"💰Комиссия: {config.WITHDRAW_FEE} OPEN"
+                                f"💰Комиссия: {config.WITHDRAW_FEE} OPEN\n"
                                 f"⛔Вывод не доступен", reply_markup=skb.get_backbtn_kb())
     else:
         await message.edit_text("➡️Введите сумму для вывода:\n"
