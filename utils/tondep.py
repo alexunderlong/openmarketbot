@@ -57,7 +57,7 @@ async def start():
                                     parse_mode=ParseMode.MARKDOWN)
 
                 last_lt = lt
-                with open('last_lt.txt', 'w') as f:
+                with open('utils/last_lt.txt', 'w') as f:
                     f.write(str(last_lt))
         except Exception as e:
             print(e)
