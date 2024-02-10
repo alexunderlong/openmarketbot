@@ -52,7 +52,7 @@ async def start():
 
                 udb.add_balance(uid, value/ 100000)
 
-                await bot.send_message(uid, 'Баланс пополнен!\n'
+                await bot.send_message(uid, '➡️ Баланс пополнен!\n'
                                             f'*+{value / 100000:.2f} OPEN*',
                                     parse_mode=ParseMode.MARKDOWN)
 
