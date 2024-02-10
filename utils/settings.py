@@ -20,6 +20,7 @@ class MarketStates(StatesGroup):
     ActiveDeals = State()
     EndDeal = State()
     appealDeal = State()
+    payDeal = State()
     postDeal = State()
     addCource = State()
     minCource = State()

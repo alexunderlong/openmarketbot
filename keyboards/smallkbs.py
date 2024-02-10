@@ -79,3 +79,10 @@ def get_acceptMK_kb(id):
     mk.button(text="Подтвердить ✅", callback_data=f"accept:{id}")
     mk.button(text="Отклонить ❌", callback_data=f"decline:{id}")
     return mk.as_markup()
+
+def get_pay_deal_kb(comment):
+    btnpayed = InlineKeyboardButton(text='Оплачено', callback_data='payed')
+    btnpay = InlineKeyboardButton(text='Оплатить', url=URLbuilder.buildurlfordeal(comment))
+    btnback = InlineKeyboardButton(text='Назад ⬅️', callback_data='market')
+    mk_b = InlineKeyboardMarkup(row_width=2, inline_keyboard=[[btnpayed, btnpay, ], [btnback,]])
+    return mk_b

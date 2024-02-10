@@ -5,7 +5,8 @@ from aiogram.types import CallbackQuery
 from handlers import start
 from handlers.callbackdefs import callbalance, market, TKsendnum, offers_process, offer_process, mydeals, ActiveDeals, \
     del_deal, withdraw, calltransfer, calldep, market_makedeal, market_CorB, deal_start, offer_accept, deal_decline, \
-    sendnum, TK_accept_trans, MK_accept_trans, MK_accept_deal, TK_accept_deal
+    sendnum, TK_accept_trans, MK_accept_trans, MK_accept_deal, TK_accept_deal, dealpayed
+
 router = Router()
 
 @router.callback_query(lambda call: True)
@@ -29,6 +30,8 @@ async def main_callback_handler(call: CallbackQuery, state: FSMContext):
         await market(message, state)
     elif data == 'makedeal':
         await market_makedeal(message, state)
+    elif data == 'payed':
+        await dealpayed(call, state)
     elif data == 'buy' or data == 'sell':
         await market_CorB(uid, message, state, data)
     elif data == 'mydeals':

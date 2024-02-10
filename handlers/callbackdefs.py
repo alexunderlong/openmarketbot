@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from aiogram import types
 from aiogram.enums import ParseMode
 from aiogram.exceptions import TelegramBadRequest
@@ -9,6 +11,7 @@ from keyboards.marketkb import get_market_kb
 from keyboards.mydealskb import get_my_deals_kb
 from keyboards.offerskb import offers_kb
 import keyboards.smallkbs as skb
+from utils.isPay import isPay
 from utils.settings import bot
 from utils import Wallet
 from utils.settings import MarketStates, WithdrawStates
@@ -261,7 +264,7 @@ async def MK_accept_deal(call: types.CallbackQuery):
     await call.message.delete()
     udb.from_bknclock_to_anuser(amount, makerid, takerid)
     await bot.send_message(chat_id=makerid, text=f"✅ Сделка прошла успешно.\n-{amount} OPEN\n+{amrub:.2f}₽")
-    await bot.send_message(chat_id=takerid, text=f"✅ Сделка прошла успешно.\n+{amount} OPEN\n+{amrub:.2f}₽")
+    await bot.send_message(chat_id=takerid, text=f"✅ Сделка прошла успешно.\n+{amount} OPEN\n-{amrub:.2f}₽")
     dealsdb.rem_amount_by_id(id, amount)
     dealsdb.set_deal_active(id)
     deal = dealsdb.get_deal_by_id(id)
@@ -315,3 +318,47 @@ async def deal_decline(call: types.CallbackQuery, state: FSMContext):
     await bot.send_message(chat_id=deal[8], text="❌ Продавец отклонил сделку. Средства возвращены на баланс.")
     print(udb.relock_balance(deal[8], float(deal[10])))
 
+
+async def dealpayed(call: types.CallbackQuery, state: FSMContext):
+    state_data = await state.get_data()
+    comment = state_data.get('curdepid')
+    msg = state_data.get('msg')
+    dealispayed = isPay(comment=comment, amount=config.MARKET_DEAL_PRICE)
+    if dealispayed == 'err':
+        await msg.edit_text(f"Внутренняя ошибка. Напишите {config.SUPPORT_USERNAME}")
+    uid = state_data.get('uid')
+
+    amount = state_data.get('amount')
+    if dealispayed:
+        if state_data.get('deal_type') == "buy":
+            deal_type = state_data.get('deal_type')
+            number = state_data.get('number')
+            cource = state_data.get('cource')
+            min = state_data.get('min')
+            dt = datetime.now()
+            udb.lock_balance(uid, amount / (1 - config.MARKET_MAKER_FEE))
+            dealsdb.add_deal(uid, amount, deal_type, number, dt, cource, min)
+            await msg.edit_text("➕ Сделка добавлена.\n"
+                                "🔔 Вы получите уведомление когда кто-либо подтвердит сделку.\n"
+                                "⛔ Средства для безопасности сделки заблокированы.\n"
+                                "🔄 В случае отмены сделки все средства будут возвращены",
+                                reply_markup=skb.get_backmrktbtn_kb())
+            await state.clear()
+        elif state_data.get('deal_type') == "sell":
+            deal_type = state_data.get('deal_type')
+            number = state_data.get('number')
+            cource = state_data.get('cource')
+            dt = datetime.now()
+            min = state_data.get('min')
+            dealsdb.add_deal(uid, amount, deal_type, number, dt, cource, min)
+            await msg.edit_text("➕ Сделка добавлена.\n"
+                                "🔔 Вы получите уведомление\n"
+                                "когда кто-либо подтвердит сделку.\n")
+            await state.clear()
+    else:
+        try:
+            await state_data.get('errmsg').delete()
+        except:
+            pass
+        errmsg = await bot.send_message(uid, f'Оплата не принята.\nПодождите подтверждение транзакции\nИли напишите {config.SUPPORT_USERNAME}')
+        await state.update_data(errmsg=errmsg)

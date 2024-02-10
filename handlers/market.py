@@ -202,33 +202,17 @@ async def market_postdeal(message: Message, state: FSMContext):
             max = udb.get_balance(message.from_user.id)[0]*(1-config.MARKET_MAKER_FEE)
             if amount <= max or state_data.get('deal_type') == "sell":
                 msg = state_data.get('msg')
-                if state_data.get('deal_type') == "buy":
-                    deal_type = state_data.get('deal_type')
-                    number = state_data.get('number')
-                    cource = state_data.get('cource')
-                    min = state_data.get('min')
-                    dt = datetime.datetime.now()
+                await state.update_data(amount=amount)
+                await state.update_data(uid=message.from_user.id)
+                dt = datetime.datetime.now()
+                cur = str(dt.year) + str(dt.month) + str(dt.day) + str(dt.hour) + str(dt.minute) + str(dt.second) + str(
+                    dt.microsecond)
+                curdepid = cur + str(message.from_user.id)
+                await state.update_data(curdepid=curdepid)
+                await msg.edit_text('💳 Оплатите счет, что бы ваше обьявление было добавлено в наш маркет',
+                                    reply_markup=skb.get_pay_deal_kb(curdepid))
+                await state.set_state(MarketStates.payDeal)
 
-                    uid = message.from_user.id
-                    udb.lock_balance(uid, amount/(1-config.MARKET_MAKER_FEE))
-                    dealsdb.add_deal(message.from_user.id, amount, deal_type, number, dt, cource, min)
-                    await msg.edit_text("➕ Сделка добавлена.\n"
-                                        "🔔 Вы получите уведомление когда кто-либо подтвердит сделку.\n"
-                                        "⛔ Средства для безопасности сделки заблокированы.\n"
-                                        "🔄 В случае отмены сделки все средства будут возвращены", reply_markup=skb.get_backmrktbtn_kb())
-                    await state.clear()
-                elif state_data.get('deal_type') == "sell":
-                    deal_type = state_data.get('deal_type')
-                    number = state_data.get('number')
-                    cource = state_data.get('cource')
-                    dt = datetime.datetime.now()
-                    uid = message.from_user.id
-                    min = state_data.get('min')
-                    dealsdb.add_deal(message.from_user.id, amount, deal_type, number, dt, cource, min)
-                    await msg.edit_text("➕ Сделка добавлена.\n"
-                                        "🔔 Вы получите уведомление\n"
-                                        "когда кто-либо подтвердит сделку.\n")
-                    await state.clear()
             else:
                 w = await message.answer("❌ Недостаточно средств\n"
                                      f"💡 Максимум: {max} OPEN\n")
