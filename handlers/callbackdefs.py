@@ -20,11 +20,11 @@ async def callbalance(uid, call):
     if user_lock == '':
         user_lock = 0.00
     if float(user_lock) > 0:
-        await call.message.edit_text(text=f'💎Ваш баланс: {user_balance:.2f} OPEN\n⛔Заблокировано: {user_lock:.2f} OPEN',
+        await call.message.edit_text(text=f'💎 Ваш баланс: {user_balance:.2f} OPEN\n⛔ Заблокировано: {user_lock:.2f} OPEN',
                              parse_mode=ParseMode.MARKDOWN, reply_markup=skb.get_backbtn_kb())
     else:
         try:
-            await call.message.edit_text(text=f'💎Ваш баланс: {user_balance:.2f} OPEN',
+            await call.message.edit_text(text=f'💎 Ваш баланс: {user_balance:.2f} OPEN',
                                 parse_mode=ParseMode.MARKDOWN, reply_markup=skb.get_backbtn_kb())
         except TelegramBadRequest:
             pass
@@ -41,7 +41,7 @@ async def market(message: Message, state: FSMContext):
     if current_state:
         await state.clear()
     try:
-        await message.edit_text(text="💳Здесь вы можете\n"
+        await message.edit_text(text="💳 Здесь вы можете\n"
                                 "купить или продать\n"
                                 "OPEN за рубли", reply_markup=get_market_kb())
     except TelegramBadRequest:
@@ -83,17 +83,17 @@ async def offer_process(call: types.CallbackQuery, state: FSMContext):
         cource = deal[7]
         min = deal[9]
         minrub = f"{float(deal[9]) * float(deal[7]):.2f}"
-        await call.message.edit_text(f"📢Объявление #{id}\n\n"
-                              f"🏷️Цена за один OPEN: {cource}₽\n\n"
-                              f"💵Доступный обьем: {amount}\n"
-                              f"❗Лимиты: {min}-{amount}\nили {minrub}-{allinrub}\n\n"
-                              f"🕒Срок оплаты: 20 мин\n"
-                              f"💳Способ оплаты: {pay_type}\n\n", reply_markup=skb.get_offer_process_kb(id))
+        await call.message.edit_text(f"📢 Объявление #{id}\n\n"
+                              f"🏷️ Цена за один OPEN: {cource}₽\n\n"
+                              f"💵 Доступный обьем: {amount}\n"
+                              f"❗ Лимиты: {min}-{amount}\nили {minrub}-{allinrub}\n\n"
+                              f"🕒 Срок оплаты: 20 мин\n"
+                              f"💳 Способ оплаты: {pay_type}\n\n", reply_markup=skb.get_offer_process_kb(id))
 
 async def mydeals(uid: int, message: Message):
     mydeals = dealsdb.get_deals_by_makerid(uid)
     try:
-        await message.edit_text(text="<b>🤝🏼Ваши сделки:</b>\n☝У вас может быть только одна сделка в разделе Купить и одна в разделе Продать. ✋Но вы всегда можете закрыть обьявления здесь, просто нажав на кнопку обьявления", reply_markup=get_my_deals_kb(mydeals), parse_mode=ParseMode.HTML)
+        await message.edit_text(text="<b>🤝🏼 Ваши сделки:</b>\n☝ У вас может быть только одна сделка в разделе Купить и одна в разделе Продать. ✋ Но вы всегда можете закрыть обьявления здесь, просто нажав на кнопку обьявления", reply_markup=get_my_deals_kb(mydeals), parse_mode=ParseMode.HTML)
     except TelegramBadRequest:
         pass
 async def ActiveDeals(message: Message, state: FSMContext, n = 10):
@@ -109,9 +109,9 @@ async def ActiveDeals(message: Message, state: FSMContext, n = 10):
     await state.update_data(cur_list=n)
     data = await state.get_data()
     if deals_type == "sell":
-        await message.edit_text(text="🔁Здесь вы можете продать OPEN за рубли.", reply_markup=offers_kb(sorted_active_deals, n))
+        await message.edit_text(text="🔁 Здесь вы можете продать OPEN за рубли.", reply_markup=offers_kb(sorted_active_deals, n))
     else:
-        await message.edit_text(text="🔁Здесь вы можете продать OPEN за рубли.", reply_markup=offers_kb(sorted_active_deals, n))
+        await message.edit_text(text="🔁 Здесь вы можете продать OPEN за рубли.", reply_markup=offers_kb(sorted_active_deals, n))
 
 async def del_deal(call: types.CallbackQuery):
     uid = call.from_user.id
@@ -119,7 +119,7 @@ async def del_deal(call: types.CallbackQuery):
     amount = dealsdb.get_deal_by_id(id)[3]
     udb.relock_balance(uid, amount/(1-config.MARKET_MAKER_FEE))
     dealsdb.set_deal_hide(id)
-    await call.message.edit_text("🗑️Сделка удалена. Вы можете создать новую.", reply_markup=skb.get_backmrktbtn_kb())
+    await call.message.edit_text("🗑️ Сделка удалена. Вы можете создать новую.", reply_markup=skb.get_backmrktbtn_kb())
 
 async def calltransfer(uid: int, message: Message, state: FSMContext):
     sum = float((await state.get_data()).get('sum'))
@@ -127,35 +127,35 @@ async def calltransfer(uid: int, message: Message, state: FSMContext):
     if (udb.get_balance(uid)[0] >= sum + config.WITHDRAW_FEE):
         resp = await Wallet.transfer(addr, sum)
         if resp:
-            await message.edit_text(f"💸Успешно отправлено {sum} OPEN", reply_markup=skb.get_backbtn_kb())
+            await message.edit_text(f"💸 Успешно отправлено {sum} OPEN", reply_markup=skb.get_backbtn_kb())
             udb.rem_balance(uid, sum + config.WITHDRAW_FEE)
         else:
-            await message.edit_text(f"❌Введен неправильный адрес.\nПереповерьте адрес.\nИ в случае повтора ошибки напишите {config.SUPPORT_USERNAME}", reply_markup=skb.get_backbtn_kb())
+            await message.edit_text(f"❌ Введен неправильный адрес.\nПереповерьте адрес.\nИ в случае повтора ошибки напишите {config.SUPPORT_USERNAME}", reply_markup=skb.get_backbtn_kb())
     else:
-        await message.edit_text("❌Недостаточно средств. Отправьте меньшую сумму.", reply_markup=skb.get_backbtn_kb())
+        await message.edit_text("❌ Недостаточно средств. Отправьте меньшую сумму.", reply_markup=skb.get_backbtn_kb())
 async def withdraw(uid: int, message: Message, state: FSMContext):
 
     balance = udb.get_balance(uid)[0]
     if balance < (config.MIN_WITHDRAW + config.WITHDRAW_FEE):
-        await message.edit_text(f"💎Ваш баланс {balance} OPEN\n"
-                                "⚡Максимум: 0 OPEN\n"
-                                f"🆙Минимальный вывод: {config.MIN_WITHDRAW} OPEN\n"
-                                f"💰Комиссия: {config.WITHDRAW_FEE} OPEN\n"
-                                f"⛔Вывод не доступен", reply_markup=skb.get_backbtn_kb())
+        await message.edit_text(f"💎 Ваш баланс {balance} OPEN\n"
+                                "⚡ Максимум: 0 OPEN\n"
+                                f"🆙 Минимальный вывод: {config.MIN_WITHDRAW} OPEN\n"
+                                f"💰 Комиссия: {config.WITHDRAW_FEE} OPEN\n"
+                                f"⛔ Вывод не доступен", reply_markup=skb.get_backbtn_kb())
     else:
-        await message.edit_text("➡️Введите сумму для вывода:\n"
-                             f"💎Ваш баланс: {balance} OPEN\n"
-                             f"⚡Максимум: {balance - config.WITHDRAW_FEE} OPEN\n"
-                             f"🆙Минимальный вывод: {config.MIN_WITHDRAW} OPEN\n"
-                             f"💰Комиссия: {config.WITHDRAW_FEE} OPEN", reply_markup=skb.get_backbtn_kb())
+        await message.edit_text("➡️ Введите сумму для вывода:\n"
+                             f"💎 Ваш баланс: {balance} OPEN\n"
+                             f"⚡ Максимум: {balance - config.WITHDRAW_FEE} OPEN\n"
+                             f"🆙 Минимальный вывод: {config.MIN_WITHDRAW} OPEN\n"
+                             f"💰 Комиссия: {config.WITHDRAW_FEE} OPEN", reply_markup=skb.get_backbtn_kb())
         await state.set_state(WithdrawStates.getsum)
         await state.update_data(msg=message)
 
 
 async def calldep(uid: int, message: Message):
-    await message.edit_text(f'💲Чтобы пополнить баланс переведите OPEN на адрес:\n\n'
+    await message.edit_text(f'💲 Чтобы пополнить баланс переведите OPEN на адрес:\n\n'
                             f'`{config.DEPOSIT_ADDRESS}`\n\n'
-                            f'➕И добавьте коментарий: `{uid}`\n\n'
+                            f'➕ И добавьте коментарий: `{uid}`\n\n'
                             'Или нажмите на кнопку снизу\n'
                             'и подтвердите перевод в вашем кошельке.',
                          reply_markup=skb.get_calldep_kb(uid),
@@ -164,7 +164,7 @@ async def calldep(uid: int, message: Message):
 async def market_makedeal(message: Message, state: FSMContext):
     await state.set_data({'maker': True})
     await state.set_state(MarketStates.BuyorSell)
-    await message.edit_text("⚖️Выберите тип сделки:", reply_markup=skb.get_market_makedeal_kb())
+    await message.edit_text("⚖️ Выберите тип сделки:", reply_markup=skb.get_market_makedeal_kb())
 
 
 async def market_CorB(uid: int, message: Message, state: FSMContext, data: str):
@@ -198,12 +198,12 @@ async def market_CorB(uid: int, message: Message, state: FSMContext, data: str):
 
         else:
             await message.edit_text(
-                "🙅‍♂️У вас уже создано обьявление в этом разделе. Вы можете удалить его в разделе мои сделки.", reply_markup=skb.get_backmrktbtn_kb())
+                "🙅‍♂️ У вас уже создано обьявление в этом разделе. Вы можете удалить его в разделе мои сделки.", reply_markup=skb.get_backmrktbtn_kb())
 
     else:
         await state.set_data({'deal_type': data})
 
-        await message.edit_text("❗На текущий момент доступны сделки "
+        await message.edit_text("❗ На текущий момент доступны сделки "
                              "только с оплатой в СБП.", reply_markup=skb.get_TK_marketCorB_kb())
 
 
@@ -228,10 +228,10 @@ async def MK_accept_trans(call: types.CallbackQuery):
     num = deal[4]
     amrub = float(deal[10]) * float(deal[7])
     await call.message.delete()
-    await bot.send_message(chat_id=deal[1], text=f"⏱️Ожидайте подтверждения сделки покупателем. В случае возникновении проблем пишите: {config.SUPPORT_USERNAME}")
+    await bot.send_message(chat_id=deal[1], text=f"⏱️ Ожидайте подтверждения сделки покупателем. В случае возникновении проблем пишите: {config.SUPPORT_USERNAME}")
 
     await bot.send_message(chat_id=deal[8],
-                           text=f'✅Продавец подтвердил перевод {amrub:.2f}₽ по СБП на номер телефона {num} с комментарием "Сделка на OpenMarket #{id}{str(deal[8])}". Проверьте и подтвердите перевод. После подтверждения OPEN-ы перейдут на счет продавца.', reply_markup=skb.get_MK_accept_trans_kb(id))
+                           text=f'✅ Продавец подтвердил перевод {amrub:.2f}₽ по СБП на номер телефона {num} с комментарием "Сделка на OpenMarket #{id}{str(deal[8])}". Проверьте и подтвердите перевод. После подтверждения OPEN-ы перейдут на счет продавца.', reply_markup=skb.get_MK_accept_trans_kb(id))
 
 async def TK_accept_deal(call: types.CallbackQuery):
     id = call.data.replace("TK_accept_deal:", "")
@@ -242,14 +242,14 @@ async def TK_accept_deal(call: types.CallbackQuery):
     amrub = (float(deal[10]) * float(deal[7]))
     await call.message.delete()
     udb.from_bknclock_to_anuser(float(amount)*float(1 - config.MARKET_MAKER_FEE), takerid, makerid)
-    await bot.send_message(chat_id=makerid, text=f"✅Сделка прошла успешно.\n+{amount} OPEN\n-{amrub:.2f}₽")
-    await bot.send_message(chat_id=takerid, text=f"✅Сделка прошла успешно.\n-{amount} OPEN\n+{amrub:.2f}₽")
+    await bot.send_message(chat_id=makerid, text=f"✅ Сделка прошла успешно.\n+{amount} OPEN\n-{amrub:.2f}₽")
+    await bot.send_message(chat_id=takerid, text=f"✅ Сделка прошла успешно.\n-{amount} OPEN\n+{amrub:.2f}₽")
     dealsdb.rem_amount_by_id(id, amount)
     dealsdb.set_deal_active(id)
     deal = dealsdb.get_deal_by_id(id)
     if float(deal[3]) < float(deal[9]):
         dealsdb.set_deal_hide(id)
-        await bot.send_message(chat_id=makerid, text=f"🏁Обьявление исчерпано.Вы можете создать новое.", reply_markup=skb.get_backmrktbtn_kb())
+        await bot.send_message(chat_id=makerid, text=f"🏁 Обьявление исчерпано.Вы можете создать новое.", reply_markup=skb.get_backmrktbtn_kb())
 
 async def MK_accept_deal(call: types.CallbackQuery):
     id = call.data.replace("MK_accept_deal:", "")
@@ -260,8 +260,8 @@ async def MK_accept_deal(call: types.CallbackQuery):
     amrub = (float(deal[10]) * float(deal[7]))
     await call.message.delete()
     udb.from_bknclock_to_anuser(amount, makerid, takerid)
-    await bot.send_message(chat_id=makerid, text=f"✅Сделка прошла успешно.\n-{amount} OPEN\n+{amrub:.2f}₽")
-    await bot.send_message(chat_id=takerid, text=f"✅Сделка прошла успешно.\n+{amount} OPEN\n+{amrub:.2f}₽")
+    await bot.send_message(chat_id=makerid, text=f"✅ Сделка прошла успешно.\n-{amount} OPEN\n+{amrub:.2f}₽")
+    await bot.send_message(chat_id=takerid, text=f"✅ Сделка прошла успешно.\n+{amount} OPEN\n+{amrub:.2f}₽")
     dealsdb.rem_amount_by_id(id, amount)
     dealsdb.set_deal_active(id)
     deal = dealsdb.get_deal_by_id(id)
@@ -269,7 +269,7 @@ async def MK_accept_deal(call: types.CallbackQuery):
         dealsdb.set_deal_hide(id)
         udb.relock_balance(makerid, float(deal[3]))
         udb.clearlock_by_id(makerid)
-        await bot.send_message(chat_id=makerid, text=f"🏁Обьявление исчерпано.Средства возвращены на баланс\n+{deal[3]} OPEN", reply_markup=skb.get_backmrktbtn_kb())
+        await bot.send_message(chat_id=makerid, text=f"🏁 Обьявление исчерпано.Средства возвращены на баланс\n+{deal[3]} OPEN", reply_markup=skb.get_backmrktbtn_kb())
 
 async def sendnum(state: FSMContext, call: types.CallbackQuery):
     data = await state.get_data()
@@ -279,7 +279,7 @@ async def sendnum(state: FSMContext, call: types.CallbackQuery):
     amrub = float(deal[10])*float(deal[7])
 
     await call.message.delete()
-    await bot.send_message(chat_id=deal[8], text=f'💸Вам нужно перевести <code>{amrub}</code>₽ по СБП на номер телефона <code>{num}</code> с комментарием <code>Сделка на OpenMarket #{id}{str(deal[8])}</code>. После чего нажать "Подтвердить перевод"', reply_markup=skb.get_sendnum_kb(id), parse_mode=ParseMode.HTML)
+    await bot.send_message(chat_id=deal[8], text=f'💸 Вам нужно перевести <code>{amrub}</code>₽ по СБП на номер телефона <code>{num}</code> с комментарием <code>Сделка на OpenMarket #{id}{str(deal[8])}</code>. После чего нажать "Подтвердить перевод"', reply_markup=skb.get_sendnum_kb(id), parse_mode=ParseMode.HTML)
 
 async def TK_accept_trans(call: types.CallbackQuery):
     id = call.data.replace("TK_accept_trans:", "")
@@ -287,9 +287,9 @@ async def TK_accept_trans(call: types.CallbackQuery):
     num = deal[4]
     amrub = float(deal[10]) * float(deal[7])
     await call.message.delete()
-    await bot.send_message(chat_id=deal[8], text=f"⏰Ожидайте подтверждения сделки продавцом. В случае возникновении проблем пишите: {config.SUPPORT_USERNAME}")
+    await bot.send_message(chat_id=deal[8], text=f"⏰ Ожидайте подтверждения сделки продавцом. В случае возникновении проблем пишите: {config.SUPPORT_USERNAME}")
     await bot.send_message(chat_id=deal[1],
-                           text=f'💸Пользователь подтвердил перевод {amrub}₽ по СБП на номер телефона {num} с комментарием "Сделка на OpenMarket #{id}{str(deal[8])}". Проверьте и подтвердите перевод. После подтверждения OPEN-ы перейдут на счет клиента.', reply_markup=skb.get_TK_accept_trans_kb(id))
+                           text=f'💸 Пользователь подтвердил перевод {amrub}₽ по СБП на номер телефона {num} с комментарием "Сделка на OpenMarket #{id}{str(deal[8])}". Проверьте и подтвердите перевод. После подтверждения OPEN-ы перейдут на счет клиента.', reply_markup=skb.get_TK_accept_trans_kb(id))
 
 
 
@@ -303,7 +303,7 @@ async def offer_accept(call: types.CallbackQuery, state: FSMContext):
         await bot.send_message(chat_id=deal[8], text="Продавец принял сделку. Ожидайте номер телефона для покупки OPEN")
     else:
         await call.message.edit_text(text="📲Ожидайте когда пользователь отправит номер телефона")
-        await bot.send_message(chat_id=deal[8], text="✅Продавец принял сделку. ", reply_markup=skb.get_sell_offer_accept_kb(id))
+        await bot.send_message(chat_id=deal[8], text="✅ Продавец принял сделку. ", reply_markup=skb.get_sell_offer_accept_kb(id))
 
 
 
@@ -312,6 +312,6 @@ async def deal_decline(call: types.CallbackQuery, state: FSMContext):
     deal = dealsdb.get_deal_by_id(id)
     dealsdb.set_deal_active(id)
     await call.message.delete()
-    await bot.send_message(chat_id=deal[8], text="❌Продавец отклонил сделку. Средства возвращены на баланс.")
+    await bot.send_message(chat_id=deal[8], text="❌ Продавец отклонил сделку. Средства возвращены на баланс.")
     print(udb.relock_balance(deal[8], float(deal[10])))
 
