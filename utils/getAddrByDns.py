@@ -1,3 +1,5 @@
+import asyncio
+
 from pytonapi import AsyncTonapi
 from pytonapi.exceptions import TONAPINotFoundError, TONAPIInternalServerError
 
@@ -13,4 +15,4 @@ async def getaddrbydns(dns: str):
     except TONAPINotFoundError:
         return 404
     except TONAPIInternalServerError:
-        return 400
+        return 500

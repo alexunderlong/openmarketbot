@@ -1,8 +1,10 @@
-aiogram
+aiogram~=3.3.0
 pytoniq-core
-pytonconnect
 python-dotenv
-pytonapi
-TonTools
+pytonapi~=0.1.7
+TonTools~=2.0.11
 pydantic
 nest_asyncio
+requests~=2.31.0
+redis
+psycopg2-binary

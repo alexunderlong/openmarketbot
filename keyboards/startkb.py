@@ -6,6 +6,6 @@ def get_start_kb() -> InlineKeyboardMarkup:
     btnbal = InlineKeyboardButton(text='Баланс 💎', callback_data='balance')
     btnwith = InlineKeyboardButton(text='Вывод ⬆️', callback_data='withdraw')
     btnmrkt = InlineKeyboardButton(text='Маркет 💱', callback_data='market')
-
-    mk_b = InlineKeyboardMarkup(row_width=3, inline_keyboard=[[btndep, btnbal, btnwith], [btnmrkt], ])
+    chequebtn = InlineKeyboardButton(text='Чеки 🧾', callback_data='cheque')
+    mk_b = InlineKeyboardMarkup(row_width=3, inline_keyboard=[[btndep, btnbal, btnwith], [btnmrkt], [chequebtn]])
     return mk_b
